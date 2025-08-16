@@ -65,6 +65,117 @@ void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
   Serial.printf("\r\n");
 }
 
+void handleKeyboardEvent(uint8_t *payload)
+{
+  for (int i = 0; i < 6; i++)
+  {
+    if (payload[7 + i] == 0)
+      continue;
+
+    for (int j = 0; j < 6; j++)
+    {
+      if (prevKeys[j] == payload[7 + i])
+        continue;
+    }
+#ifdef ENABLE_DEBUG_PRINT
+    Serial.printf("Key Pressed: %02X\r\n", payload[7 + i]);
+#endif
+#ifdef ENABLE_USB_DEVICE
+    Keyboard.press(payload[7 + i]);
+#endif
+  }
+  for (int i = 0; i < 6; i++)
+  {
+    if (prevKeys[i] == 0)
+      continue;
+    for (int j = 0; j < 6; j++)
+    {
+      if (prevKeys[i] == payload[7 + j])
+        continue;
+    }
+#ifdef ENABLE_DEBUG_PRINT
+    Serial.printf("Key Released: %02X\r\n", prevKeys[i]);
+#endif
+#ifdef ENABLE_USB_DEVICE
+    Keyboard.release(prevKeys[i]);
+#endif
+  }
+  for (int i = 0; i < 6; i++)
+  {
+    prevKeys[i] = payload[7 + i];
+  }
+
+  uint8_t modifier = payload[5];
+
+  for (int i = 0; i < 8; i++)
+  {
+    uint8_t b = 1 << i;
+    if (prevModifier & b == modifier & b)
+      continue;
+    if (modifier & b)
+    {
+#ifdef ENABLE_DEBUG_PRINT
+      Serial.printf("Key Pressed: %02X\r\n", 0x80 + i);
+#endif
+#ifdef ENABLE_USB_DEVICE
+      Keyboard.press(0x80 + i);
+#endif
+    }
+    if (prevModifier & b)
+    {
+#ifdef ENABLE_DEBUG_PRINT
+      Serial.printf("Key Released: %02X\r\n", 0x80 + i);
+#endif
+#ifdef ENABLE_USB_DEVICE
+      Keyboard.release(0x80 + i);
+#endif
+    }
+  }
+  prevModifier = modifier;
+}
+
+void handleMouseEvent(uint8_t *payload)
+{
+  int8_t x = payload[7];
+  int8_t y = payload[8];
+  int8_t w = payload[9];
+#ifdef ENABLE_DEBUG_PRINT
+  Serial.printf("Mouse x=%02d,y=%02d,w=%02d\r\n", x, y, w);
+#endif
+#ifdef ENABLE_USB_DEVICE
+  Mouse.move(x, y, w);
+#endif
+
+  uint8_t mouseKey = payload[6];
+  for (int i = 0; i < 3; i++)
+  {
+    uint8_t b = 1 << i;
+
+    if (b & prevMouseKey == b & mouseKey)
+      continue;
+
+    if (b & mouseKey)
+    {
+#ifdef ENABLE_DEBUG_PRINT
+      Serial.printf("Mouse press=%d\r\n", b);
+#endif
+#ifdef ENABLE_USB_DEVICE
+      Mouse.press(b);
+#endif
+    }
+    if (b & prevMouseKey)
+    {
+#ifdef ENABLE_DEBUG_PRINT
+      Serial.printf("Mouse release=%d\r\n", b);
+#endif
+#ifdef ENABLE_USB_DEVICE
+      Mouse.release(b);
+#endif
+    }
+  }
+  prevMouseKey = payload[6];
+}
+
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 {
 
@@ -108,115 +219,12 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
     {
       if (payload[3] == 0x02)
       {
-        // キーボード入力
-
-        for (int i = 0; i < 6; i++)
-        {
-          if (payload[7 + i] == 0)
-            continue;
-
-          for (int j = 0; j < 6; j++)
-          {
-            if (prevKeys[j] == payload[7 + i])
-              continue;
-          }
-#ifdef ENABLE_DEBUG_PRINT
-          Serial.printf("Key Pressed: %02X\r\n", payload[7 + i]);
-#endif
-#ifdef ENABLE_USB_DEVICE
-          Keyboard.press(payload[7 + i]);
-#endif
-        }
-        for (int i = 0; i < 6; i++)
-        {
-          if (prevKeys[i] == 0)
-            continue;
-          for (int j = 0; j < 6; j++)
-          {
-            if (prevKeys[i] == payload[7 + j])
-              continue;
-          }
-#ifdef ENABLE_DEBUG_PRINT
-          Serial.printf("Key Released: %02X\r\n", prevKeys[i]);
-#endif
-#ifdef ENABLE_USB_DEVICE
-          Keyboard.release(prevKeys[i]);
-#endif
-        }
-        for (int i = 0; i < 6; i++)
-        {
-          prevKeys[i] = payload[7 + i];
-        }
-
-        uint8_t modifier = payload[5];
-
-        for (int i = 0; i < 8; i++)
-        {
-          uint8_t b = 1 << i;
-          if (prevModifier & b == modifier & b)
-            continue;
-          if (modifier & b)
-          {
-#ifdef ENABLE_DEBUG_PRINT
-            Serial.printf("Key Pressed: %02X\r\n", 0x80 + i);
-#endif
-#ifdef ENABLE_USB_DEVICE
-            Keyboard.press(0x80 + i);
-#endif
-          }
-          if (prevModifier & b)
-          {
-#ifdef ENABLE_DEBUG_PRINT
-            Serial.printf("Key Released: %02X\r\n", 0x80 + i);
-#endif
-#ifdef ENABLE_USB_DEVICE
-            Keyboard.release(0x80 + i);
-#endif
-          }
-        }
-        prevModifier = modifier;
+        handleKeyboardEvent(payload);
       }
 
       if (payload[3] == 0x05)
       {
-        int8_t x = payload[7];
-        int8_t y = payload[8];
-        int8_t w = payload[9];
-#ifdef ENABLE_DEBUG_PRINT
-        Serial.printf("Mouse x=%02d,y=%02d,w=%02d\r\n", x, y, w);
-#endif
-#ifdef ENABLE_USB_DEVICE
-        Mouse.move(x, y, w);
-#endif
-
-        uint8_t mouseKey = payload[6];
-        for (int i = 0; i < 3; i++)
-        {
-          uint8_t b = 1 << i;
-
-          if (b & prevMouseKey == b & mouseKey)
-            continue;
-
-          if (b & mouseKey)
-          {
-#ifdef ENABLE_DEBUG_PRINT
-            Serial.printf("Mouse press=%d\r\n", b);
-#endif
-#ifdef ENABLE_USB_DEVICE
-            Mouse.press(b);
-#endif
-          }
-          if (b & prevMouseKey)
-          {
-#ifdef ENABLE_DEBUG_PRINT
-            Serial.printf("Mouse release=%d\r\n", b);
-#endif
-#ifdef ENABLE_USB_DEVICE
-            Mouse.release(b);
-#endif
-          }
-        }
-        prevMouseKey = payload[6];
+        handleMouseEvent(payload);
       }
     }
 
