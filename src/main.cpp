@@ -65,7 +65,6 @@ void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
   Serial.printf("\r\n");
 }
 
-
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 {
 
@@ -195,23 +194,25 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         {
           uint8_t b = 1 << i;
 
-          if(b & prevMouseKey == b & mouseKey)
+          if (b & prevMouseKey == b & mouseKey)
             continue;
 
-          if(b & mouseKey){
+          if (b & mouseKey)
+          {
 #ifdef ENABLE_DEBUG_PRINT
             Serial.printf("Mouse press=%d\r\n", b);
 #endif
 #ifdef ENABLE_USB_DEVICE
-          Mouse.press(b);
+            Mouse.press(b);
 #endif
           }
-          if(b & prevMouseKey){
+          if (b & prevMouseKey)
+          {
 #ifdef ENABLE_DEBUG_PRINT
             Serial.printf("Mouse release=%d\r\n", b);
 #endif
 #ifdef ENABLE_USB_DEVICE
-          Mouse.release(b);
+            Mouse.release(b);
 #endif
           }
         }
