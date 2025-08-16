@@ -1,4 +1,4 @@
-export const CH9329_KEYCODE: { [index: string]: number } = {
+export const ARDUINO_KEYCODE: { [index: string]: number } = {
     "A": 0x04,
     "B": 0x05,
     "C": 0x06,

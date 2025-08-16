@@ -1,4 +1,4 @@
-import { CH9329_KEYCODE } from "./ch9329_keycode";
+import { ARDUINO_KEYCODE } from "./arduino_keycode";
 import { ModifierKeyName, MouseButtonName } from "./entities";
 
 function byteToHexString(byteArray: Uint8Array): string {
@@ -169,12 +169,12 @@ export class WebSocketConnector {
     }
 
     SendKey(key: string, shift: boolean = false, ctrl: boolean = false, alt: boolean = false, win: boolean = false) {
-        if (!(key in CH9329_KEYCODE)) {
+        if (!(key in ARDUINO_KEYCODE)) {
             console.warn("unknown key", key);
             return;
         }
 
-        const code = [CH9329_KEYCODE[key]];
+        const code = [ARDUINO_KEYCODE[key]];
 
         const ok = this.sendKey(code, this.ctrl || ctrl, this.shift || shift, this.alt || alt, this.win || win);
         if (ok) {
