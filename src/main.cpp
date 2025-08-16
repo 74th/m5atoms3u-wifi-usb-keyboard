@@ -16,6 +16,10 @@
 #include <Adafruit_NeoPixel.h>
 
 #include <wifi_settings.hpp>
+#include <morse_code_ip_address.hpp>
+
+void MorseLEDOn();
+void MorseLEDOff();
 
 // data/index.html
 extern const uint8_t _binary_data_index_html_gz_start[] asm("_binary_data_index_html_gz_start");
@@ -44,8 +48,9 @@ WiFiMulti wifiMulti;
 WebSocketsServer webSocket = WebSocketsServer(81);
 WebServer server(80);
 Adafruit_NeoPixel pixels(1, LED_PIN, NEO_GRB + NEO_KHZ800);
+MorseCodeIPAddress morseCodeIPAddress(MorseLEDOn, MorseLEDOff);
 
-uint8_t prevKeys[6] = {0, 0, 0, 0, 0, 0};
+    uint8_t prevKeys[6] = {0, 0, 0, 0, 0, 0};
 uint8_t prevModifier = 0;
 uint8_t prevMouseKey = 0;
 
@@ -63,6 +68,18 @@ void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
     src++;
   }
   Serial.printf("\r\n");
+}
+
+void MorseLEDOn()
+{
+  pixels.setPixelColor(0, pixels.Color(255, 255, 255));
+  pixels.show();
+}
+
+void MorseLEDOff()
+{
+  pixels.setPixelColor(0, LED_COLOR_NORMAL);
+  pixels.show();
 }
 
 void handleKeyboardEvent(uint8_t *payload)
@@ -324,6 +341,9 @@ void loop()
     Serial.print("Connected! IP address: ");
     Serial.println(WiFi.localIP());
     Serial.flush();
+    morseCodeIPAddress.start(false);
 #endif
   }
+
+  morseCodeIPAddress.loop();
 }
