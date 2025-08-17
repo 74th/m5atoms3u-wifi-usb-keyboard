@@ -1,6 +1,6 @@
 # スマートフォンをPCのUSBキーボード・マウスとして利用できるAtomS3U
 
-![alt text](docs/top.png)
+![top](docs/top.png)
 
 ## 概要
 
@@ -11,7 +11,7 @@
 
 ## 仕組み
 
-![alt text](docs/architecture.drawio.svg)
+![architecture](docs/architecture.drawio.svg)
 
 AtomS3UはWiFiに接続し、HTTPサーバーとして機能します。
 スマートフォンのWebブラウザからこのHTTPサーバーにアクセスすると、操作用のトラックパッドとキーボードのページが表示されます。
@@ -24,12 +24,12 @@ AtomS3UはPCにUSB HIDデバイスとして認識されており、受け取っ�
 
 ### キーボード・トラックパッド
 
-![alt text](docs/mouse_keyboard_function.drawio.svg)
+![mouse_keyboard_function](docs/mouse_keyboard_function.drawio.svg)
 
 キーボードには複数のレイアウトが用意されています。
 物理キーボードでは`Shift`キーと併用する必要があるような記号も、1タップで簡単に入力できます。
 
-![alt text](docs/keyboard_layouts.drawio.svg)
+![keyboard_layouts](docs/keyboard_layouts.drawio.svg)
 
 実際の操作の様子を動画でご覧いただけます。
 
@@ -41,7 +41,7 @@ WiFiの設定は、PCにUSBで接続し、Webブラウザから行うことが�
 
 🌐 https://esp32-serial-wifi-setup.74th.tech
 
-![alt text](docs/web_serial_wifi_setup.png)
+![web_serial_wifi_setup](docs/web_serial_wifi_setup.png)
 
 セットアップが完了すると、LEDが青色に点灯します。
 
@@ -107,12 +107,16 @@ extern const uint8_t _binary_data_index_html_gz_end[] asm("_binary_data_index_ht
 
 Webブラウザ上でWiFiのセットアップを可能にするために、[ESP32 Serial WiFi Setup](https://github.com/74th/esp32-serial-wifi-setup) という自作モジュールを利用しています。
 
+https://github.com/74th/esp32-serial-wifi-setup
+
 このモジュールはWebSerial APIを用いてESP32-S3のシリアルポートに接続し、JSON-RPC 2.0プロトコルでWiFiのSSIDやパスワードを設定します。
 これにより、ファームウェアを再ビルドすることなく、USB接続だけで簡単にWiFi設定ができます。
 
 ### IPアドレスのモールス信号通知
 
 IPアドレスをモールス信号で通知する機能には、[ESP32 Morse Code IP Address Indicator](https://github.com/74th/esp32-morse-code-ipaddress-indicator) という自作モジュールを利用しています。
+
+https://github.com/74th/esp32-morse-code-ipaddress-indicator
 
 OLEDなどのディスプレイがないM5Stack製品でも、この機能を使えばIPアドレスを確認できるため便利です。
 ただし、利用者がモールス信号を解読できる必要があります。
