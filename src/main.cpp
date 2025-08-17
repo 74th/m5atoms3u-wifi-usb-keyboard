@@ -17,6 +17,7 @@
 
 #include <wifi_settings.hpp>
 #include <morse_code_ip_address.hpp>
+#include "ESP32SerialWiFiSetup.h"
 
 void MorseLEDOn();
 void MorseLEDOff();
@@ -34,6 +35,7 @@ extern const uint8_t _binary_data_assets_style_css_gz_end[] asm("_binary_data_as
 USBHID HID;
 USBHIDKeyboard Keyboard;
 USBHIDMouse Mouse;
+Esp32SerialWifiSetup::WiFiSetupManager wifiSetup;
 
 #define ENABLE_USB_DEVICE 1
 
@@ -42,6 +44,7 @@ USBHIDMouse Mouse;
 #define LED_COLOR_SETUP Adafruit_NeoPixel::Color(0, 32, 0)
 #define LED_COLOR_NORMAL Adafruit_NeoPixel::Color(0, 0, 32)
 #define LED_COLOR_CONNECT Adafruit_NeoPixel::Color(32, 32, 0)
+#define LED_COLOR_UNCONNECTED Adafruit_NeoPixel::Color(32, 0, 0)
 #define LED_COLOR_OPERATION Adafruit_NeoPixel::Color(0, 32, 32)
 
 WiFiMulti wifiMulti;
@@ -50,9 +53,10 @@ WebServer server(80);
 Adafruit_NeoPixel pixels(1, LED_PIN, NEO_GRB + NEO_KHZ800);
 MorseCodeIPAddress morseCodeIPAddress(MorseLEDOn, MorseLEDOff);
 
-    uint8_t prevKeys[6] = {0, 0, 0, 0, 0, 0};
+uint8_t prevKeys[6] = {0, 0, 0, 0, 0, 0};
 uint8_t prevModifier = 0;
 uint8_t prevMouseKey = 0;
+bool enableUSBDevice = false;
 
 void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
 {
@@ -272,21 +276,9 @@ void setup()
 {
   M5.begin();
 
-#ifdef ENABLE_USB_DEVICE
-  HID.begin();
-  USB.begin();
-  Keyboard.begin();
-  Mouse.begin();
-#endif
-
 #ifdef ENABLE_DEBUG_PRINT
   Serial.begin(115200);
-
   Serial.setDebugOutput(true);
-
-  Serial.println();
-  Serial.println();
-  Serial.println();
 #endif
 
   pixels.begin();
@@ -296,54 +288,80 @@ void setup()
 
   delay(1000);
 
-  wifiMulti.addAP(WIFI_SSID, WIFI_PASSWORD);
+  wifiSetup.begin();
 
-  while (wifiMulti.run() != WL_CONNECTED)
-  {
-    delay(100);
-  }
-
-#ifdef ENABLE_DEBUG_PRINT
-  Serial.print("Connected! IP address: ");
-  Serial.println(WiFi.localIP());
-  Serial.flush();
-#endif
-
-  webSocket.begin();
-  webSocket.onEvent(webSocketEvent);
-
-  server.on("/", HTTP_GET, []()
-            { sendStatic("text/html",
-                         _binary_data_index_html_gz_start,
-                         _binary_data_index_html_gz_end); });
-  server.on("/assets/index.js", HTTP_GET, []()
-            { sendStatic("application/javascript",
-                         _binary_data_assets_index_js_gz_start,
-                         _binary_data_assets_index_js_gz_end); });
-  server.on("/assets/style.css", HTTP_GET, []()
-            { sendStatic("text/css",
-                         _binary_data_assets_style_css_gz_start,
-                         _binary_data_assets_style_css_gz_end); });
-  server.begin();
-
-  pixels.setPixelColor(0, LED_COLOR_NORMAL);
-  pixels.show();
-}
-
-void loop()
-{
   M5.update();
-  webSocket.loop();
-  server.handleClient();
-  if (M5.BtnA.wasClicked())
+
+  if (!wifiSetup.isConnected() || M5.BtnA.isPressed())
   {
 #ifdef ENABLE_DEBUG_PRINT
     Serial.print("Connected! IP address: ");
     Serial.println(WiFi.localIP());
     Serial.flush();
-    morseCodeIPAddress.start(false);
 #endif
+
+    enableUSBDevice = false;
+
+    pixels.setPixelColor(0, LED_COLOR_UNCONNECTED);
+    pixels.show();
+  }
+  else
+  {
+    enableUSBDevice = true;
   }
 
-  morseCodeIPAddress.loop();
+  if (enableUSBDevice)
+  {
+
+#ifdef ENABLE_USB_DEVICE
+    // HID.begin();
+    Keyboard.begin();
+    Mouse.begin();
+    USB.begin();
+#endif
+    webSocket.begin();
+    webSocket.onEvent(webSocketEvent);
+
+    server.on("/", HTTP_GET, []()
+              { sendStatic("text/html",
+                           _binary_data_index_html_gz_start,
+                           _binary_data_index_html_gz_end); });
+    server.on("/assets/index.js", HTTP_GET, []()
+              { sendStatic("application/javascript",
+                           _binary_data_assets_index_js_gz_start,
+                           _binary_data_assets_index_js_gz_end); });
+    server.on("/assets/style.css", HTTP_GET, []()
+              { sendStatic("text/css",
+                           _binary_data_assets_style_css_gz_start,
+                           _binary_data_assets_style_css_gz_end); });
+    server.begin();
+
+    pixels.setPixelColor(0, LED_COLOR_NORMAL);
+    pixels.show();
+  }
+}
+
+void loop()
+{
+  M5.update();
+
+  if (enableUSBDevice)
+  {
+    webSocket.loop();
+    server.handleClient();
+
+    if (M5.BtnA.wasClicked())
+    {
+#ifdef ENABLE_DEBUG_PRINT
+      Serial.print("Connected! IP address: ");
+      Serial.println(WiFi.localIP());
+      Serial.flush();
+      morseCodeIPAddress.start(false);
+#endif
+    }
+
+    morseCodeIPAddress.loop();
+  }else{
+    wifiSetup.handleSerialCommands();
+  }
 }
