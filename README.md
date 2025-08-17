@@ -75,6 +75,32 @@ For example, if the IP address is `192.168.1.178`, the signal will be as follows
 
 This feature uses [esp32-morse-code-ipaddress-indicator](https://github.com/74th/esp32-morse-code-ipaddress-indicator).
 
+## Burn firmware
+
+download firmware image from [release page](https://github.com/74th/m5atoms3u-wifi-usb-keyboard).
+
+### espflash
+
+[espflash](https://github.com/esp-rs/espflash)
+
+```
+espflash write-bin 0 ./m5atoms3u-wifi-usb-keyboard.bin
+```
+
+### esptool
+
+[esptool](https://github.com/espressif/esptool)
+
+```
+esptool --chip esp32s3 write-flash 0x0 ./m5atoms3u-wifi-usb-keyboard.bin
+```
+
+### M5BUrner
+
+[M5Burner](https://docs.m5stack.com/en/uiflow/m5burner/intro)
+
+search "WiFi USB Keyboard for AtomS3U".
+
 ## Technology Stack
 
 ### WebSocket Communication
