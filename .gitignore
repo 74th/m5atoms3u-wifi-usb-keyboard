@@ -8,3 +8,4 @@ data/*.gz
 data/assets/*.css
 data/assets/*.js
 data/assets/*.gz
+*.DS_Store

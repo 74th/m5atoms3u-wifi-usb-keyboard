@@ -87,23 +87,8 @@ void MorseLEDOff()
 
 void handleKeyboardEvent(uint8_t *payload)
 {
-  for (int i = 0; i < 6; i++)
-  {
-    if (payload[7 + i] == 0)
-      continue;
+  uint8_t modifier = payload[5];
 
-    for (int j = 0; j < 6; j++)
-    {
-      if (prevKeys[j] == payload[7 + i])
-        continue;
-    }
-#ifdef ENABLE_DEBUG_PRINT
-    Serial.printf("Key Pressed: %02X\r\n", payload[7 + i]);
-#endif
-#ifdef ENABLE_USB_DEVICE
-    Keyboard.press(payload[7 + i]);
-#endif
-  }
   for (int i = 0; i < 6; i++)
   {
     if (prevKeys[i] == 0)
@@ -124,8 +109,6 @@ void handleKeyboardEvent(uint8_t *payload)
   {
     prevKeys[i] = payload[7 + i];
   }
-
-  uint8_t modifier = payload[5];
 
   for (int i = 0; i < 8; i++)
   {
@@ -152,6 +135,24 @@ void handleKeyboardEvent(uint8_t *payload)
     }
   }
   prevModifier = modifier;
+
+  for (int i = 0; i < 6; i++)
+  {
+    if (payload[7 + i] == 0)
+      continue;
+
+    for (int j = 0; j < 6; j++)
+    {
+      if (prevKeys[j] == payload[7 + i])
+        continue;
+    }
+#ifdef ENABLE_DEBUG_PRINT
+    Serial.printf("Key Pressed: %02X\r\n", payload[7 + i]);
+#endif
+#ifdef ENABLE_USB_DEVICE
+    Keyboard.press(payload[7 + i]);
+#endif
+  }
 }
 
 void handleMouseEvent(uint8_t *payload)
