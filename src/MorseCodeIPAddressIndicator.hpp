@@ -1,12 +1,12 @@
 #include <functional>
 
-class MorseCodeIPAddress
+class MorseCodeIPAddressIndicator
 {
 public:
     std::function<void()> led_on_fn;
     std::function<void()> led_off_fn;
 
-    MorseCodeIPAddress(std::function<void()> led_on, std::function<void()> led_off)
+    MorseCodeIPAddressIndicator(std::function<void()> led_on, std::function<void()> led_off)
         : led_on_fn(led_on), led_off_fn(led_off) {}
 
     void begin();

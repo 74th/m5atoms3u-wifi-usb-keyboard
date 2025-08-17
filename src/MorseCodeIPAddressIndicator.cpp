@@ -1,7 +1,7 @@
 #include <functional>
 #include <Arduino.h>
 #include <WiFi.h>
-#include "morse_code_ip_address.hpp"
+#include "MorseCodeIPAddressIndicator.hpp"
 
 // モールス信号のパターン定義（数字0-9）
 // ドット=短点（150ms）、ダッシュ=長点（450ms）
@@ -60,10 +60,10 @@ static inline const char *get_morse_pattern_for_char(char ch)
     return nullptr; // 対応外文字
 }
 
-void MorseCodeIPAddress::begin() {
+void MorseCodeIPAddressIndicator::begin() {
 }
 
-void MorseCodeIPAddress::start(bool full_ip)
+void MorseCodeIPAddressIndicator::start(bool full_ip)
 {
     uint32_t now_ms = millis();
 
@@ -117,7 +117,7 @@ void MorseCodeIPAddress::start(bool full_ip)
     }
 }
 
-void MorseCodeIPAddress::loop()
+void MorseCodeIPAddressIndicator::loop()
 {
     uint32_t now_ms = millis();
 
@@ -255,7 +255,7 @@ void MorseCodeIPAddress::loop()
     }
 }
 
-void MorseCodeIPAddress::stop()
+void MorseCodeIPAddressIndicator::stop()
 {
     morse_active = false;
     led_off_fn();

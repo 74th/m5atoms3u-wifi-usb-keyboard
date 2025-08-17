@@ -15,8 +15,7 @@
 #include <mdns.h>
 #include <Adafruit_NeoPixel.h>
 
-#include <wifi_settings.hpp>
-#include <morse_code_ip_address.hpp>
+#include "MorseCodeIPAddressIndicator.hpp"
 #include "ESP32SerialWiFiSetup.h"
 
 void MorseLEDOn();
@@ -51,7 +50,7 @@ WiFiMulti wifiMulti;
 WebSocketsServer webSocket = WebSocketsServer(81);
 WebServer server(80);
 Adafruit_NeoPixel pixels(1, LED_PIN, NEO_GRB + NEO_KHZ800);
-MorseCodeIPAddress morseCodeIPAddress(MorseLEDOn, MorseLEDOff);
+MorseCodeIPAddressIndicator morseCodeIPAddress(MorseLEDOn, MorseLEDOff);
 
 uint8_t prevKeys[6] = {0, 0, 0, 0, 0, 0};
 uint8_t prevModifier = 0;
