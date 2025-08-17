@@ -89,7 +89,5 @@ export const ARDUINO_KEYCODE: { [index: string]: number } = {
     "LEFT": 0xD8,
     "DOWN": 0xD9,
     "UP": 0xDA,
-    "NUM_LOCK": 0xDB,
-    "KANJI": 0x90,
-    "EISU": 0x91,
+    "NUM_LOCK": 0xDB
 }

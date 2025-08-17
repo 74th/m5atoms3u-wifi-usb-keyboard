@@ -361,10 +361,8 @@ export function Keyboard({ ws }: { ws: WebSocketConnector }) {
           ></Key>
           <Key text="PD" code="PAGE_UP" ws={ws} width="10%"></Key>
           <Key text="PU" code="PAGE_DOWN" ws={ws} width="10%"></Key>
-          <Key text="漢" code="KANJI" ws={ws} width="10%"></Key>
-          <Key text="英" code="EISU" ws={ws} width="10%"></Key>
-          <Key text="ESC" code="ESCAPE" ws={ws} width="10%"></Key>
-          <Key text="DEL" code="DELETE" ws={ws} width="10%"></Key>
+          <Key text="ESC" code="ESCAPE" ws={ws} width="20%"></Key>
+          <Key text="DEL" code="DELETE" ws={ws} width="20%"></Key>
         </div>
       </>
     );
