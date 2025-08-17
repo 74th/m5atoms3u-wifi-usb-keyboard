@@ -17,5 +17,6 @@
         "initializer_list": "cpp",
         "span": "cpp",
         "text_encoding": "cpp"
-    }
+    },
+    // "prettier.prettierPath": "npx prettier"
 }
