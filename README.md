@@ -69,6 +69,7 @@ When the LED is blue, pressing Button A will notify you of the last octet of the
 For example, if the IP address is `192.168.1.178`, the signal will be as follows:
 
 ```
+1     7     8
 ·---- --··· ---··
 ```
 
