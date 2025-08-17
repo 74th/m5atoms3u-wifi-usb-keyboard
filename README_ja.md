@@ -121,3 +121,29 @@ https://github.com/74th/esp32-morse-code-ipaddress-indicator
 
 OLEDなどのディスプレイがないM5Stack製品でも、この機能を使えばIPアドレスを確認できるため便利です。
 ただし、利用者がモールス信号を解読できる必要があります。
+
+## AtomS3Uへの書き込み方法
+
+[release page](https://github.com/74th/m5atoms3u-wifi-usb-keyboard) からファームウェアをダウンロードし、以下のツールを用いて書き込んでください。
+
+### espflash
+
+[espflash](https://github.com/esp-rs/espflash)
+
+```
+espflash write-bin 0 ./m5atoms3u-wifi-usb-keyboard.bin
+```
+
+### esptool
+
+[esptool](https://github.com/espressif/esptool)
+
+```
+esptool --chip esp32s3 write-flash 0x0 ./m5atoms3u-wifi-usb-keyboard.bin
+```
+
+### M5BUrner
+
+[M5Burner](https://docs.m5stack.com/en/uiflow/m5burner/intro)
+
+search "WiFi USB Keyboard for AtomS3U".
