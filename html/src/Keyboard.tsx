@@ -298,7 +298,7 @@ export function Keyboard({ ws }: { ws: WebSocketConnector }) {
           <Key text='"' code="QUOTE" shift={true} ws={ws} width="10%"></Key>
           <Key text="<" code="COMMA" shift={true} ws={ws} width="10%"></Key>
           <Key text=">" code="PERIOD" shift={true} ws={ws} width="10%"></Key>
-          <Key text="_" code="MINUS" shift={true} ws={ws} width="10%"></Key>
+          <Key text="-" code="MINUS" shift={true} ws={ws} width="10%"></Key>
           <Key text="+" code="EQUALS" shift={true} ws={ws} width="10%"></Key>
         </div>
         <div
